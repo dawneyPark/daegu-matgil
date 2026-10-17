@@ -183,6 +183,12 @@ const PLACES = [
   { id: "jungang-tteok", name: "중앙떡볶이", gu: "중구", dong: "동성로", cat: "한식·분식", ten: ["납작만두"], price: 1, badge: "정말 많이 먹었던 떡볶이",
     desc: "30년 넘은 동성로 분식집. 매콤한 가래떡 떡볶이에 납작만두를 곁들여 먹습니다.",
     menu: ["가래떡 떡볶이", "납작만두", "순대"], tip: "번호표를 받고 기다릴 만큼 붐벼요. 일요일 휴무." },
+  { id: "dongheung", name: "동흥", gu: "동구", dong: "동대구역 앞", cat: "한식·분식", ten: [], price: 2, badge: "직접 먹어 보고 괜찮았던 곳", map: "동대구역 동흥",
+    desc: "동대구역 앞 평양냉면·곰탕집. 기차 타기 전에 들러 한 끼 하기 좋습니다.",
+    menu: ["평양냉면", "곰탕"], tip: "역 바로 앞이라 기차 시간 맞춰 가기 편해요." },
+  { id: "menyaroji", name: "멘야로지", gu: "동구", dong: "동대구역 · 동부로32길", cat: "라멘", ten: [], price: 2,
+    desc: "동대구역 근처 라멘집. 진한 닭 육수의 토리파이탄과 닭튀김 토리카츠가 인기입니다.",
+    menu: ["토리파이탄", "토리카츠", "탄탄멘", "고기덮밥"], tip: "점심엔 15분 정도 기다린다는 후기가 있어요. 기차 타기 전에 들르기 좋아요." },
   { id: "zootopia", name: "주토피아", gu: "중구", dong: "동덕로", cat: "피자·버거", ten: [], price: 2, badge: "단짝 친구가 좋아한 곳",
     desc: "나폴리식 화덕 피자집. 서울 신사동에 2호점을 낼 만큼 이름난 대구 본점입니다.",
     menu: ["모르타델라 피스타치오 피자", "마르게리따", "카프리", "디아볼라"], tip: "예약 없이는 들어가기 어려워요." },
@@ -212,13 +218,13 @@ const PLACES = [
 // 가게가 많은 구·군부터
 const GUS = ["전체", ...Object.entries(PLACES.reduce((n, p) => ({ ...n, [p.gu]: (n[p.gu] || 0) + 1 }), {}))
   .sort((x, y) => y[1] - x[1]).map(([g]) => g)];
-const CATS = ["전체", "곱창·막창", "고기", "치킨", "한식·분식", "피자·버거", "다이닝", "카페·브런치"];
+const CATS = ["전체", "곱창·막창", "고기", "치킨", "한식·분식", "라멘", "피자·버거", "다이닝", "카페·브런치"];
 const state = { q: "", gu: "전체", cat: "전체" };
 
 const $ = (s) => document.querySelector(s);
 const esc = (s) => s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
-function mapQuery(p) { return encodeURIComponent("대구 " + p.name); }
+function mapQuery(p) { return encodeURIComponent(p.map || "대구 " + p.name); }
 
 function chipRow(el, items, key) {
   items.forEach((v) => {
