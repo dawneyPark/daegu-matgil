@@ -56,19 +56,6 @@ h2 { font-family: var(--font-display); font-weight: 400; font-size: 26px; margin
 .section-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
 .section-head p { margin: 0; color: var(--muted); font-size: 13px; }
 
-/* 대구 10미 */
-.mi { display: flex; flex-direction: column; gap: 14px; }
-.mi-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); }
-.mi-item {
-  background: var(--surface); border: 0; padding: 14px 12px; text-align: left; cursor: pointer;
-  font: inherit; color: inherit; display: flex; flex-direction: column; gap: 4px; min-width: 0;
-}
-.mi-item:hover { background: var(--chili-soft); }
-.mi-item[aria-pressed="true"] { background: var(--chili); color: #fff; }
-.mi-item[aria-pressed="true"] small { color: #fff; opacity: .85; }
-.mi-item strong { font-size: 16px; }
-.mi-item small { color: var(--muted); font-size: 12px; line-height: 1.4; }
-@media (max-width: 640px) { .mi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 
 /* 필터 */
 .controls { display: flex; flex-direction: column; gap: 12px; }
@@ -105,7 +92,6 @@ h2 { font-family: var(--font-display); font-weight: 400; font-size: 26px; margin
 .body h3 { margin: 0; font-size: 19px; line-height: 1.35; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 .tag { font-size: 11px; font-weight: 700; padding: 2px 7px; border-radius: 4px; background: var(--chili-soft); color: var(--chili); letter-spacing: .02em; }
 .tag.cat { background: transparent; border: 1px solid var(--line); color: var(--muted); font-weight: 500; }
-.tag.mine { background: transparent; border: 1px solid var(--leaf); color: var(--leaf); }
 .body p { margin: 0; max-width: 62ch; }
 .menu { display: flex; gap: 6px 14px; flex-wrap: wrap; font-size: 14px; color: var(--muted); padding: 0; margin: 0; list-style: none; }
 .menu li::before { content: "· "; color: var(--chili); }
@@ -131,22 +117,14 @@ footer p { margin: 0 0 4px; max-width: 70ch; }
 
 <div class="wrap">
   <header>
-    <div class="eyebrow">DAEGU FOOD GUIDE · 8개 구·군</div>
+    <div class="eyebrow">DAEGU FOOD GUIDE · 내가 가 본 곳</div>
     <h1>대구 <span>맛길</span></h1>
-    <p class="lede">찜갈비부터 납작만두까지. 대구 사람들이 손님 오면 데려가는 골목과 시장, 오래된 가게를 지역과 메뉴별로 정리했습니다.</p>
+    <p class="lede">막창부터 내추럴 와인까지. 대구에서 직접 먹어 보고 맛있었던 가게만 모았습니다.</p>
   </header>
-
-  <section class="mi" aria-labelledby="mi-h">
-    <div class="section-head">
-      <h2 id="mi-h">대구 10미(味)</h2>
-      <p>대구시가 지정한 대표 음식 10가지. 누르면 관련 가게만 보여요.</p>
-    </div>
-    <div class="mi-grid" id="mi"></div>
-  </section>
 
   <section class="controls" aria-label="찾기">
     <div class="search-row">
-      <input id="q" type="search" placeholder="메뉴, 동네, 가게 이름 (예: 막창, 서문시장)" aria-label="검색">
+      <input id="q" type="search" placeholder="메뉴, 동네, 가게 이름 (예: 막창, 동성로)" aria-label="검색">
       <button class="btn" id="random" type="button">오늘 뭐 먹지?</button>
       <button class="btn ghost" id="reset" type="button">초기화</button>
     </div>
@@ -156,7 +134,7 @@ footer p { margin: 0 0 4px; max-width: 70ch; }
 
   <section aria-labelledby="list-h" style="display:flex;flex-direction:column;gap:12px">
     <div class="section-head">
-      <h2 id="list-h">골목과 가게</h2>
+      <h2 id="list-h">맛집</h2>
       <span class="count" id="count"></span>
     </div>
     <div class="list" id="list"></div>
@@ -169,120 +147,71 @@ footer p { margin: 0 0 4px; max-width: 70ch; }
 </div>
 
 <script>
-const TEN = [
-  { name: "찜갈비", desc: "양은냄비에 매운 양념 소갈비찜" },
-  { name: "따로국밥", desc: "밥과 국을 따로 내는 소고기 국밥" },
-  { name: "막창구이", desc: "연탄불 소·돼지 막창, 된장 소스" },
-  { name: "뭉티기", desc: "뭉텅 썬 생소고기, 마늘 양념장" },
-  { name: "복어불고기", desc: "콩나물과 볶는 매콤한 복어" },
-  { name: "논메기매운탕", desc: "논에서 키운 메기 매운탕" },
-  { name: "누른국수", desc: "밀가루·콩가루 반죽 칼국수" },
-  { name: "무침회", desc: "오징어·고둥을 초장에 버무린 회" },
-  { name: "야끼우동", desc: "해물·채소 볶은 매운 볶음우동" },
-  { name: "납작만두", desc: "얇게 부친 만두에 간장·고춧가루" }
-];
-
 const PLACES = [
-  { id: "dongin", name: "동인동 찜갈비 골목", gu: "중구", dong: "동인동", cat: "고기", ten: ["찜갈비"], price: 3,
-    desc: "1960~70년대부터 찜갈비 집이 모여 생긴 골목. 찌그러진 양은냄비에 마늘과 고춧가루를 듬뿍 넣어 맵게 찌는 게 대구식입니다.",
-    menu: ["매운 찜갈비", "순한 찜갈비", "남은 양념에 밥 비비기"], tip: "맵기를 고를 수 있는 집이 많아요. 처음이면 보통맛부터." },
-  { id: "anjirang", name: "안지랑 곱창골목", gu: "남구", dong: "대명동", cat: "고기", ten: ["막창구이"], price: 1,
-    desc: "안지랑역 근처에 곱창·막창 집이 줄지어 선 골목. 저렴한 가격 덕분에 저녁이면 학생과 직장인으로 북적입니다.",
-    menu: ["돼지 막창", "양념 곱창", "볶음밥"], tip: "막창은 바싹 구워 된장 소스에 파·고추를 얹어 먹어요." },
-  { id: "pyeonghwa", name: "평화시장 닭똥집 골목", gu: "동구", dong: "신암동", cat: "시장", ten: [], price: 1,
-    desc: "닭똥집(모래주머니) 튀김이 처음 시작된 곳으로 알려진 골목. 후라이드, 양념, 간장 맛으로 한 접시씩 시켜 나눠 먹습니다.",
-    menu: ["똥집 튀김", "양념 똥집", "닭 튀김"], tip: "반반 주문이 되는 곳이 많아요." },
-  { id: "bangogae", name: "반고개 무침회 골목", gu: "서구", dong: "내당동", cat: "해산물", ten: ["무침회"], price: 2,
-    desc: "데친 오징어와 고둥, 미나리, 무를 새콤달콤한 초고추장에 버무리는 대구식 무침회 전문점이 모인 골목입니다.",
-    menu: ["무침회", "무침회 비빔밥", "포장 무침회"], tip: "포장해 가는 손님이 많아 포장 전용 메뉴도 있어요." },
-  { id: "seomun", name: "서문시장", gu: "중구", dong: "대신동", cat: "시장", ten: ["누른국수", "납작만두"], price: 1,
-    desc: "대구에서 가장 큰 전통시장. 낮에는 칼국수·누른국수 노점이, 밤에는 야시장 먹거리 매대가 열립니다.",
-    menu: ["누른국수", "칼제비", "납작만두", "야시장 꼬치"], tip: "국수 노점은 점심 무렵이 가장 붐벼요. 야시장 운영일은 방문 전에 확인." },
-  { id: "miseong", name: "미성당 납작만두", gu: "중구", dong: "남산동", cat: "분식", ten: ["납작만두"], price: 1,
-    desc: "대구 납작만두를 대표하는 오래된 가게. 당면과 부추를 조금 넣어 얇게 부친 만두에 간장, 고춧가루, 파를 뿌려 냅니다.",
-    menu: ["납작만두", "쫄면"], tip: "쫄면이나 떡볶이에 곁들여 먹는 게 대구식이에요." },
-  { id: "gukil", name: "국일따로국밥", gu: "중구", dong: "중구 도심", cat: "국밥·국수", ten: ["따로국밥"], price: 1,
-    desc: "해방 직후부터 이어져 온 따로국밥 노포. 대파와 무를 넉넉히 넣은 얼큰한 소고기 국에 밥을 따로 내줍니다.",
-    menu: ["따로국밥", "선지 따로국밥"], tip: "이른 아침 해장으로 찾는 손님이 많아요." },
-  { id: "bukseong", name: "북성로 연탄불고기", gu: "중구", dong: "북성로", cat: "고기", ten: ["야끼우동"], price: 1,
-    desc: "공구 상가가 문을 닫는 저녁이면 연탄불 석쇠 불고기 포장마차가 들어서는 거리. 근처 중식당에서 야끼우동도 맛볼 수 있습니다.",
-    menu: ["석쇠 돼지불고기", "우동", "야끼우동(인근 중식당)"], tip: "밤늦게까지 문 여는 곳이 많아 2차로 좋아요." },
-  { id: "deulan", name: "들안길 먹거리타운", gu: "수성구", dong: "두산동·상동", cat: "고기", ten: ["복어불고기", "뭉티기"], price: 3,
-    desc: "수성못 근처 큰길을 따라 한정식, 고깃집, 복어 요리집이 늘어선 대구 대표 먹거리 거리. 가족 모임이나 손님 대접 장소로 많이 찾습니다.",
-    menu: ["한정식", "복어불고기", "한우 구이·뭉티기"], tip: "주차장 있는 대형 식당이 많아 차로 가기 편해요." },
-  { id: "dalseong", name: "달성 논메기매운탕 마을", gu: "달성군", dong: "달성군 일대", cat: "해산물", ten: ["논메기매운탕"], price: 2,
-    desc: "논에서 기른 메기로 끓이는 매운탕 집이 시 외곽 달성군 곳곳에 있습니다. 수제비를 넣어 칼칼하게 끓여 냅니다.",
-    menu: ["논메기매운탕", "메기찜", "수제비 추가"], tip: "외곽이라 차로 가는 게 편해요. 비슬산·송해공원 나들이와 묶어 보세요." },
-  { id: "kimkwangseok", name: "김광석 다시그리기길 · 방천시장", gu: "중구", dong: "대봉동", cat: "카페", ten: [], price: 1,
-    desc: "가수 김광석을 기리는 벽화 골목과 오래된 방천시장이 붙어 있는 산책 코스. 골목 안 작은 카페와 분식집을 둘러보기 좋습니다.",
-    menu: ["카페", "분식", "시장 간식"], tip: "동성로에서 걸어서 갈 수 있어요." },
-  { id: "apsan", name: "앞산 카페거리", gu: "남구", dong: "대명동", cat: "카페", ten: [], price: 2,
-    desc: "앞산 자락 아래 카페와 브런치집, 디저트 가게가 모인 거리. 앞산 전망대 케이블카와 묶어 반나절 코스로 좋습니다.",
-    menu: ["브런치", "디저트", "핸드드립"], tip: "주말 오후엔 주차가 어려워요." },
-
-  // 직접 가 보고 맛있었던 곳 (mine: true)
-  { id: "chungmuro", name: "충무로양곱창", gu: "수성구", dong: "두산동 · 들안로 92", cat: "고기", ten: [], price: 3, mine: true,
+  { id: "chungmuro", name: "충무로양곱창", gu: "수성구", dong: "두산동 · 들안로 92", cat: "곱창·막창", ten: [], price: 3,
     desc: "들안길에 있는 양곱창 전문점. 특양과 대창이 가장 인기 있고, 막창구이와 곱창전골도 있습니다.",
     menu: ["특양구이", "대창구이", "막창구이", "곱창전골"], tip: "전화로 예약하고 가는 게 좋아요." },
-  { id: "jeil", name: "제일숯불막창 본점", gu: "수성구", dong: "동대구로29길", cat: "고기", ten: ["막창구이"], price: 2, mine: true,
+  { id: "jeil", name: "제일숯불막창 본점", gu: "수성구", dong: "동대구로29길", cat: "곱창·막창", ten: ["막창구이"], price: 2,
     desc: "숯불에 구워 먹는 막창집. 웨이팅이 생길 만큼 찾는 사람이 많습니다.",
     menu: ["숯불 막창"], tip: "기본 3인분부터 주문받는다는 후기가 있어요." },
-  { id: "iltong", name: "일통왕소금구이", gu: "수성구", dong: "달구벌대로", cat: "고기", ten: [], price: 2, mine: true,
+  { id: "hyomokgol", name: "효목골막창", gu: "동구", dong: "효목동", cat: "곱창·막창", ten: ["막창구이"], price: 2,
+    desc: "효목동 골목의 오래된 막창 전문점.",
+    menu: ["막창구이"], tip: "영업시간 정보가 적어요. 가기 전에 지도에서 확인하세요." },
+  { id: "iltong", name: "일통왕소금구이", gu: "수성구", dong: "달구벌대로", cat: "고기", ten: [], price: 2,
     desc: "왕소금을 뿌려 굽는 돼지고기 구이집. 직원이 고기를 끝까지 구워 줍니다.",
     menu: ["삼겹살", "목살", "된장찌개"], tip: "목살을 먹고 된장찌개에 밥을 비벼 먹어 보세요." },
-  { id: "zootopia", name: "주토피아", gu: "중구", dong: "동덕로", cat: "양식", ten: [], price: 2, mine: true,
-    desc: "나폴리식 화덕 피자집. 서울 신사동에 2호점을 낼 만큼 이름난 대구 본점입니다.",
-    menu: ["모르타델라 피스타치오 피자", "마르게리따", "카프리", "디아볼라"], tip: "예약 없이는 들어가기 어려워요." },
-  { id: "kais", name: "카이스샌드위치샵", gu: "중구", dong: "봉산동", cat: "카페", ten: [], price: 2, mine: true,
-    desc: "봉산문화거리의 샌드위치 가게. 매장이 넓고 2인석과 바 좌석이 많아 혼자 가기도 편합니다.",
-    menu: ["치킨팜 샌드위치", "커피"], tip: "아침 일찍 열어 브런치로 좋아요." },
-  { id: "deep", name: "딥커피로스터스", gu: "중구", dong: "봉산동", cat: "카페", ten: [], price: 1, mine: true,
-    desc: "봉산문화거리에 본점이 있는 로스터리 카페. 범어동 등 대구 안에 여러 지점이 있습니다.",
-    menu: ["커피"], tip: "지점마다 주소가 다르니 본점인지 확인하고 가세요." },
-  { id: "newyork", name: "뉴욕통닭", gu: "중구", dong: "종로", cat: "치킨", ten: [], price: 2, mine: true,
-    desc: "가마솥에 볶아 내는 양념치킨으로 알려진 통닭집. 튀김옷이 도톰해 닭강정 같은 식감입니다.",
-    menu: ["가마솥 양념치킨", "찜닭"], tip: "하루 판매량이 적어 금방 마감돼요. 전화 예약 후 포장 추천." },
-  { id: "roller", name: "롤러커피", gu: "중구", dong: "남산동", cat: "카페", ten: [], price: 1, mine: true,
-    desc: "남산동 인쇄골목 안 작은 카페. 이름은 인쇄할 때 잉크를 바르는 롤러에서 따왔습니다.",
-    menu: ["카페라떼"], tip: "점심시간엔 근처 직장인들로 줄이 생겨요." },
-  { id: "oily", name: "오일리버거 교동본점", gu: "중구", dong: "국채보상로125길", cat: "양식", ten: [], price: 2, mine: true,
-    desc: "동성로 근처 골목의 수제버거 가게.",
-    menu: ["수제버거"], tip: "동아식당과 같은 골목이라 같이 둘러보기 좋아요." },
-  { id: "donga", name: "동아식당", gu: "중구", dong: "국채보상로125길", cat: "국밥·국수", ten: [], price: 1, mine: true,
-    desc: "메뉴 네 가지 정도로 단출하게 하는 국수집. 메뉴는 철마다 바뀝니다.",
-    menu: ["고등어소면", "계란김밥", "들기름국수"], tip: "대기가 매우 길어요. 테이블링 원격 줄서기를 이용하세요." },
-  { id: "orangewood", name: "와인다이닝 오렌지우드", gu: "중구", dong: "동인동", cat: "양식", ten: [], price: 3, mine: true,
-    desc: "장작불로 요리하는 내추럴 와인 다이닝. 오픈 키친에 바 좌석과 테이블석이 있어 기념일 데이트로 좋습니다.",
-    menu: ["관자", "병어 스테이크", "내추럴 와인"], tip: "월요일 휴무. 영업시간이 바뀔 수 있어 인스타그램으로 확인하세요." },
-  { id: "nakyoung", name: "낙영찜갈비 본점", gu: "중구", dong: "동인동", cat: "고기", ten: ["찜갈비"], price: 3, mine: true,
+  { id: "nakyoung", name: "낙영찜갈비 본점", gu: "중구", dong: "동인동", cat: "고기", ten: ["찜갈비"], price: 3,
     desc: "동인동 찜갈비 골목의 대표 가게. 본관과 별관에 넓은 전용 주차장이 있습니다.",
     menu: ["찜갈비"], tip: "16~17시는 준비 시간, 격주 월요일 휴무예요." },
-  { id: "hyomokgol", name: "효목골막창", gu: "동구", dong: "효목동", cat: "고기", ten: ["막창구이"], price: 2, mine: true,
-    desc: "효목동 골목의 오래된 막창 전문점.",
-    menu: ["막창구이"], tip: "동네 노포라 저녁에 붐벼요." },
-  { id: "meals", name: "오스테리아 밀즈", gu: "수성구", dong: "범어동", cat: "양식", ten: [], price: 2, mine: true,
-    desc: "수성구청역 근처 파스타집. 콜드 파스타와 한치 먹물 리조또가 대표 메뉴입니다.",
-    menu: ["콜드 파스타", "한치 먹물 리조또", "스테이크"], tip: "예약을 받지 않아요. 오픈 시간에 맞춰 가면 덜 기다려요." },
-  { id: "aso", name: "아소다이닝", gu: "수성구", dong: "달구벌대로496길", cat: "일식", ten: [], price: 3, mine: true,
-    desc: "수성구의 일식 다이닝. 가격대는 있지만 그만큼 맛있다는 평이 많습니다.",
-    menu: ["옥돔", "코스(예약)"], tip: "예약하면 금액에 맞춰 코스를 구성해 줘요." },
-  { id: "goindol", name: "고인돌", gu: "동구", dong: "평화시장 닭똥집골목", cat: "치킨", ten: [], price: 1, mine: true,
-    desc: "평화시장 닭똥집 골목에서 손꼽히는 집. 닭똥집 튀김과 뚝배기 찜닭이 대표 메뉴입니다.",
-    menu: ["닭똥집 (후라이드·양념·간장)", "뚝배기 찜닭"], tip: "손님이 적으면 일찍 문을 닫기도 해요." },
-  { id: "silla", name: "신라식당", gu: "중구", dong: "동성로", cat: "해산물", ten: [], price: 2, mine: true,
-    desc: "돌판에 볶아 주는 낙지볶음으로 유명한 동성로 식당. 매콤달콤한 양념에 낙지가 실합니다.",
-    menu: ["돌판 낙지볶음"], tip: "낙지볶음은 2인분부터 주문돼요. 웨이팅이 있는 편." },
-  { id: "wanggeomi", name: "왕거미식당", gu: "중구", dong: "국채보상로", cat: "고기", ten: ["뭉티기"], price: 3, mine: true,
+  { id: "wanggeomi", name: "왕거미식당", gu: "중구", dong: "국채보상로", cat: "고기", ten: ["뭉티기"], price: 3,
     desc: "생고기(뭉티기)로 이름난 노포. 오드래기, 대창구이, 등골 같은 특수부위도 냅니다.",
     menu: ["생고기", "오드래기", "대창구이", "등골"], tip: "생고기는 평일에만 팔아요. 일요일 휴무, 주차장 없음." },
-  { id: "jungang-tteok", name: "중앙떡볶이", gu: "중구", dong: "동성로", cat: "분식", ten: ["납작만두"], price: 1, mine: true,
+  { id: "newyork", name: "뉴욕통닭", gu: "중구", dong: "종로", cat: "치킨", ten: [], price: 2,
+    desc: "가마솥에 볶아 내는 양념치킨으로 알려진 통닭집. 튀김옷이 도톰해 닭강정 같은 식감입니다.",
+    menu: ["가마솥 양념치킨", "찜닭"], tip: "하루 판매량이 적어 금방 마감돼요. 전화 예약 후 포장 추천." },
+  { id: "goindol", name: "고인돌", gu: "동구", dong: "평화시장 닭똥집골목", cat: "치킨", ten: [], price: 1,
+    desc: "평화시장 닭똥집 골목에서 손꼽히는 집. 닭똥집 튀김과 뚝배기 찜닭이 대표 메뉴입니다.",
+    menu: ["닭똥집 (후라이드·양념·간장)", "뚝배기 찜닭"], tip: "손님이 적으면 일찍 문을 닫기도 해요." },
+  { id: "donga", name: "동아식당", gu: "중구", dong: "국채보상로125길", cat: "한식·분식", ten: [], price: 1,
+    desc: "메뉴 네 가지 정도로 단출하게 하는 국수집. 메뉴는 철마다 바뀝니다.",
+    menu: ["고등어소면", "계란김밥", "들기름국수"], tip: "대기가 매우 길어요. 테이블링 원격 줄서기를 이용하세요." },
+  { id: "silla", name: "신라식당", gu: "중구", dong: "동성로", cat: "한식·분식", ten: [], price: 2,
+    desc: "돌판에 볶아 주는 낙지볶음으로 유명한 동성로 식당. 매콤달콤한 양념에 낙지가 실합니다.",
+    menu: ["돌판 낙지볶음"], tip: "낙지볶음은 2인분부터 주문돼요. 웨이팅이 있는 편." },
+  { id: "jungang-tteok", name: "중앙떡볶이", gu: "중구", dong: "동성로", cat: "한식·분식", ten: ["납작만두"], price: 1,
     desc: "30년 넘은 동성로 분식집. 매콤한 가래떡 떡볶이에 납작만두를 곁들여 먹습니다.",
-    menu: ["가래떡 떡볶이", "납작만두", "순대"], tip: "번호표를 받고 기다릴 만큼 붐벼요. 일요일 휴무." }
+    menu: ["가래떡 떡볶이", "납작만두", "순대"], tip: "번호표를 받고 기다릴 만큼 붐벼요. 일요일 휴무." },
+  { id: "zootopia", name: "주토피아", gu: "중구", dong: "동덕로", cat: "피자·버거", ten: [], price: 2,
+    desc: "나폴리식 화덕 피자집. 서울 신사동에 2호점을 낼 만큼 이름난 대구 본점입니다.",
+    menu: ["모르타델라 피스타치오 피자", "마르게리따", "카프리", "디아볼라"], tip: "예약 없이는 들어가기 어려워요." },
+  { id: "oily", name: "오일리버거 교동본점", gu: "중구", dong: "국채보상로125길", cat: "피자·버거", ten: [], price: 2,
+    desc: "동성로 근처 골목의 수제버거 가게.",
+    menu: ["수제버거"], tip: "동아식당과 같은 골목이라 같이 둘러보기 좋아요." },
+  { id: "orangewood", name: "와인다이닝 오렌지우드", gu: "중구", dong: "동인동", cat: "다이닝", ten: [], price: 3,
+    desc: "장작불로 요리하는 내추럴 와인 다이닝. 오픈 키친에 바 좌석과 테이블석이 있어 기념일 데이트로 좋습니다.",
+    menu: ["관자", "병어 스테이크", "내추럴 와인"], tip: "월요일 휴무. 영업시간이 바뀔 수 있어 인스타그램으로 확인하세요." },
+  { id: "meals", name: "오스테리아 밀즈", gu: "수성구", dong: "범어동", cat: "다이닝", ten: [], price: 2,
+    desc: "수성구청역 근처 파스타집. 콜드 파스타와 한치 먹물 리조또가 대표 메뉴입니다.",
+    menu: ["콜드 파스타", "한치 먹물 리조또", "스테이크"], tip: "예약을 받지 않아요. 오픈 시간에 맞춰 가면 덜 기다려요." },
+  { id: "aso", name: "아소다이닝", gu: "수성구", dong: "달구벌대로496길", cat: "다이닝", ten: [], price: 3,
+    desc: "수성구의 일식 다이닝. 가격대는 있지만 그만큼 맛있다는 평이 많습니다.",
+    menu: ["옥돔", "코스(예약)"], tip: "예약하면 금액에 맞춰 코스를 구성해 줘요." },
+  { id: "kais", name: "카이스샌드위치샵", gu: "중구", dong: "봉산동", cat: "카페·브런치", ten: [], price: 2,
+    desc: "봉산문화거리의 샌드위치 가게. 매장이 넓고 2인석과 바 좌석이 많아 혼자 가기도 편합니다.",
+    menu: ["치킨팜 샌드위치", "커피"], tip: "아침 일찍 열어 브런치로 좋아요." },
+  { id: "deep", name: "딥커피로스터스", gu: "중구", dong: "봉산동", cat: "카페·브런치", ten: [], price: 1,
+    desc: "봉산문화거리에 본점이 있는 로스터리 카페. 범어동 등 대구 안에 여러 지점이 있습니다.",
+    menu: ["커피"], tip: "지점마다 주소가 다르니 본점인지 확인하고 가세요." },
+  { id: "roller", name: "롤러커피", gu: "중구", dong: "남산동", cat: "카페·브런치", ten: [], price: 1,
+    desc: "남산동 인쇄골목 안 작은 카페. 이름은 인쇄할 때 잉크를 바르는 롤러에서 따왔습니다.",
+    menu: ["카페라떼"], tip: "점심시간엔 근처 직장인들로 줄이 생겨요." }
 ];
 
-const GUS = ["전체", "중구", "남구", "동구", "서구", "북구", "수성구", "달서구", "달성군"];
-const CATS = ["전체", "고기", "국밥·국수", "해산물", "치킨", "양식", "일식", "분식", "시장", "카페"];
-const state = { q: "", gu: "전체", cat: "전체", ten: null, pick: null };
+// 가게가 많은 구·군부터
+const GUS = ["전체", ...Object.entries(PLACES.reduce((n, p) => ({ ...n, [p.gu]: (n[p.gu] || 0) + 1 }), {}))
+  .sort((x, y) => y[1] - x[1]).map(([g]) => g)];
+const CATS = ["전체", "곱창·막창", "고기", "치킨", "한식·분식", "피자·버거", "다이닝", "카페·브런치"];
+const state = { q: "", gu: "전체", cat: "전체", pick: null };
 
 const $ = (s) => document.querySelector(s);
 const esc = (s) => s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
@@ -298,21 +227,9 @@ function chipRow(el, items, key) {
   });
 }
 
-function buildTen() {
-  const el = $("#mi");
-  TEN.forEach((t) => {
-    const b = document.createElement("button");
-    b.type = "button"; b.className = "mi-item"; b.dataset.v = t.name;
-    b.innerHTML = `<strong>${t.name}</strong><small>${t.desc}</small>`;
-    b.addEventListener("click", () => { state.ten = state.ten === t.name ? null : t.name; state.pick = null; render(); });
-    el.appendChild(b);
-  });
-}
-
 function matches(p) {
   if (state.gu !== "전체" && p.gu !== state.gu) return false;
   if (state.cat !== "전체" && p.cat !== state.cat) return false;
-  if (state.ten && !p.ten.includes(state.ten)) return false;
   if (state.q) {
     const hay = [p.name, p.gu, p.dong, p.cat, p.desc, ...p.menu, ...p.ten].join(" ").toLowerCase();
     if (!hay.includes(state.q.toLowerCase())) return false;
@@ -325,21 +242,19 @@ function price(n) { return "₩₩₩".slice(0, n) + `<span class="off">${"₩�
 function render() {
   document.querySelectorAll("#gu .chip").forEach((b) => b.setAttribute("aria-pressed", b.dataset.v === state.gu));
   document.querySelectorAll("#cat .chip").forEach((b) => b.setAttribute("aria-pressed", b.dataset.v === state.cat));
-  document.querySelectorAll(".mi-item").forEach((b) => b.setAttribute("aria-pressed", b.dataset.v === state.ten));
 
   const shown = PLACES.filter(matches);
   $("#count").textContent = `${shown.length}곳`;
   const list = $("#list");
   if (!shown.length) {
-    const extra = state.ten ? ` <a href="https://map.naver.com/p/search/${encodeURIComponent("대구 " + state.ten)}" target="_blank" rel="noopener">네이버 지도에서 '대구 ${state.ten}' 찾아보기</a>` : "";
-    list.innerHTML = `<div class="empty">조건에 맞는 곳이 없어요. 필터를 줄여 보세요.${extra}</div>`;
+    list.innerHTML = `<div class="empty">조건에 맞는 곳이 없어요. 필터를 줄여 보세요.</div>`;
     return;
   }
   list.innerHTML = shown.map((p) => `
     <article class="place${state.pick === p.id ? " pick" : ""}" id="p-${p.id}">
       <div class="where"><b>${p.gu}</b><span>${esc(p.dong)}</span></div>
       <div class="body">
-        <h3>${esc(p.name)} <span class="tag cat">${p.cat}</span>${p.mine ? `<span class="tag mine">내 맛집</span>` : ""}${p.ten.map((t) => `<span class="tag">10미 · ${t}</span>`).join("")}</h3>
+        <h3>${esc(p.name)} <span class="tag cat">${p.cat}</span>${p.ten.map((t) => `<span class="tag">10미 · ${t}</span>`).join("")}</h3>
         <p>${esc(p.desc)}</p>
         <ul class="menu">${p.menu.map((m) => `<li>${esc(m)}</li>`).join("")}</ul>
         <div class="tip">팁. ${esc(p.tip)}</div>
@@ -356,14 +271,14 @@ function render() {
 
 $("#q").addEventListener("input", (e) => { state.q = e.target.value.trim(); state.pick = null; render(); });
 $("#reset").addEventListener("click", () => {
-  Object.assign(state, { q: "", gu: "전체", cat: "전체", ten: null, pick: null });
+  Object.assign(state, { q: "", gu: "전체", cat: "전체", pick: null });
   $("#q").value = ""; render();
 });
 $("#random").addEventListener("click", () => {
   const pool = PLACES.filter(matches);
   const from = pool.length ? pool : PLACES;
   const p = from[Math.floor(Math.random() * from.length)];
-  if (!pool.length) Object.assign(state, { q: "", gu: "전체", cat: "전체", ten: null });
+  if (!pool.length) Object.assign(state, { q: "", gu: "전체", cat: "전체" });
   state.pick = p.id; render();
   const el = document.getElementById("p-" + p.id);
   if (el) el.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "center" });
@@ -371,7 +286,6 @@ $("#random").addEventListener("click", () => {
 
 chipRow($("#gu"), GUS, "gu");
 chipRow($("#cat"), CATS, "cat");
-buildTen();
 render();
 </script>
 </body>
