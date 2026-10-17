@@ -96,7 +96,6 @@ h1 { font-family: var(--font-serif); font-weight: 400; font-size: clamp(28px, 7.
 .ten { display: inline-block; margin-left: 6px; vertical-align: 3px; font-family: var(--font-body); font-weight: 400; font-size: 11px; padding: 1px 8px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); }
 .badge { align-self: flex-start; font-family: var(--font-serif); font-size: 13px; padding: 3px 12px; border-radius: 999px; background: var(--accent); color: var(--on-accent); }
 .badge::before { content: "♡ "; }
-.badge.famous { background: transparent; color: var(--accent); border: 1px solid var(--accent); }
 .badge.famous::before { content: "★ "; }
 .place.fav { border-color: var(--accent); }
 .place p { margin: 0; }
@@ -279,7 +278,7 @@ function render() {
     return;
   }
   list.innerHTML = shown.map((p) => `
-    <article class="place${p.badge ? " fav" : ""}" id="p-${p.id}">
+    <article class="place${p.badge || p.famous ? " fav" : ""}" id="p-${p.id}">
       <div class="meta"><span class="cat">${p.cat}</span><span>${p.gu} · ${esc(p.dong)}</span></div>
       ${p.badge ? `<span class="badge">${esc(p.badge)}</span>` : p.famous ? `<span class="badge famous">대구 유명 맛집</span>` : ""}
       <h3>${esc(p.name)}${p.ten.map((t) => `<span class="ten">대구 10미 · ${t}</span>`).join("")}</h3>
