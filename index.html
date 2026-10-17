@@ -93,6 +93,9 @@ h1 { font-family: var(--font-serif); font-weight: 400; font-size: clamp(28px, 7.
 .meta .cat { color: var(--accent); letter-spacing: .04em; }
 .place h3 { font-family: var(--font-serif); font-weight: 700; font-size: 20px; line-height: 1.4; margin: 0; }
 .ten { display: inline-block; margin-left: 6px; vertical-align: 3px; font-family: var(--font-body); font-weight: 400; font-size: 11px; padding: 1px 8px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); }
+.badge { align-self: flex-start; font-family: var(--font-serif); font-size: 13px; padding: 3px 12px; border-radius: 999px; background: var(--accent); color: var(--on-accent); }
+.badge::before { content: "♡ "; }
+.place.fav { border-color: var(--accent); }
 .place p { margin: 0; }
 .menu { display: flex; gap: 6px; flex-wrap: wrap; padding: 0; margin: 0; list-style: none; }
 .menu li { font-size: 13px; padding: 2px 10px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); }
@@ -146,7 +149,7 @@ footer p { margin: 0; }
 
 <script>
 const PLACES = [
-  { id: "chungmuro", name: "충무로양곱창", gu: "수성구", dong: "두산동 · 들안로 92", cat: "곱창·막창", ten: [], price: 3,
+  { id: "chungmuro", name: "충무로양곱창", gu: "수성구", dong: "두산동 · 들안로 92", cat: "곱창·막창", ten: [], price: 3, badge: "우리 가족 단골집",
     desc: "들안길에 있는 양곱창 전문점. 특양과 대창이 가장 인기 있고, 막창구이와 곱창전골도 있습니다.",
     menu: ["특양구이", "대창구이", "막창구이", "곱창전골"], tip: "전화로 예약하고 가는 게 좋아요." },
   { id: "jeil", name: "제일숯불막창 본점", gu: "수성구", dong: "동대구로29길", cat: "곱창·막창", ten: ["막창구이"], price: 2,
@@ -164,9 +167,9 @@ const PLACES = [
   { id: "wanggeomi", name: "왕거미식당", gu: "중구", dong: "국채보상로", cat: "고기", ten: ["뭉티기"], price: 3,
     desc: "생고기(뭉티기)로 이름난 노포. 오드래기, 대창구이, 등골 같은 특수부위도 냅니다.",
     menu: ["생고기", "오드래기", "대창구이", "등골"], tip: "생고기는 평일에만 팔아요. 일요일 휴무, 주차장 없음." },
-  { id: "newyork", name: "뉴욕통닭", gu: "중구", dong: "종로", cat: "치킨", ten: [], price: 2,
+  { id: "newyork", name: "뉴욕통닭", gu: "중구", dong: "종로", cat: "치킨", ten: [], price: 2, badge: "어릴 때부터 먹던 찜닭",
     desc: "가마솥에 볶아 내는 양념치킨으로 알려진 통닭집. 튀김옷이 도톰해 닭강정 같은 식감입니다.",
-    menu: ["가마솥 양념치킨", "찜닭"], tip: "하루 판매량이 적어 금방 마감돼요. 전화 예약 후 포장 추천." },
+    menu: ["찜닭", "가마솥 양념치킨"], tip: "하루 판매량이 적어 금방 마감돼요. 전화 예약 후 포장 추천." },
   { id: "goindol", name: "고인돌", gu: "동구", dong: "평화시장 닭똥집골목", cat: "치킨", ten: [], price: 1,
     desc: "평화시장 닭똥집 골목에서 손꼽히는 집. 닭똥집 튀김과 뚝배기 찜닭이 대표 메뉴입니다.",
     menu: ["닭똥집 (후라이드·양념·간장)", "뚝배기 찜닭"], tip: "손님이 적으면 일찍 문을 닫기도 해요." },
@@ -249,8 +252,9 @@ function render() {
     return;
   }
   list.innerHTML = shown.map((p) => `
-    <article class="place" id="p-${p.id}">
+    <article class="place${p.badge ? " fav" : ""}" id="p-${p.id}">
       <div class="meta"><span class="cat">${p.cat}</span><span>${p.gu} · ${esc(p.dong)}</span></div>
+      ${p.badge ? `<span class="badge">${esc(p.badge)}</span>` : ""}
       <h3>${esc(p.name)}${p.ten.map((t) => `<span class="ten">대구 10미 · ${t}</span>`).join("")}</h3>
       <p>${esc(p.desc)}</p>
       <ul class="menu">${p.menu.map((m) => `<li>${esc(m)}</li>`).join("")}</ul>
