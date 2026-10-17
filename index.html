@@ -96,6 +96,8 @@ h1 { font-family: var(--font-serif); font-weight: 400; font-size: clamp(28px, 7.
 .ten { display: inline-block; margin-left: 6px; vertical-align: 3px; font-family: var(--font-body); font-weight: 400; font-size: 11px; padding: 1px 8px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); }
 .badge { align-self: flex-start; font-family: var(--font-serif); font-size: 13px; padding: 3px 12px; border-radius: 999px; background: var(--accent); color: var(--on-accent); }
 .badge::before { content: "♡ "; }
+.badge.famous { background: transparent; color: var(--accent); border: 1px solid var(--accent); }
+.badge.famous::before { content: "★ "; }
 .place.fav { border-color: var(--accent); }
 .place p { margin: 0; }
 .menu { display: flex; gap: 6px; flex-wrap: wrap; padding: 0; margin: 0; list-style: none; }
@@ -153,16 +155,16 @@ const PLACES = [
   { id: "chungmuro", name: "충무로양곱창", gu: "수성구", dong: "두산동 · 들안로 92", cat: "곱창·막창", ten: [], price: 3, badge: "우리 가족 단골집",
     desc: "들안길에 있는 양곱창 전문점. 특양과 대창이 가장 인기 있고, 막창구이와 곱창전골도 있습니다.",
     menu: ["특양구이", "대창구이", "막창구이", "곱창전골"], tip: "전화로 예약하고 가는 게 좋아요." },
-  { id: "yanggopwha", name: "양곱화", gu: "수성구", dong: "두산동 · 들안로 80", cat: "곱창·막창", ten: [], price: 3,
+  { id: "yanggopwha", name: "양곱화", gu: "수성구", dong: "두산동 · 들안로 80", cat: "곱창·막창", ten: [], price: 3, famous: true,
     desc: "들안길의 한우 대창구이 전문점. 특양구이와 한우 곱창구이도 대표 메뉴입니다.",
     menu: ["한우 대창구이", "특양구이", "한우 곱창구이"], tip: "저녁 장사만 해요(주말은 오후 3시부터). 3인분부터 주문받는다는 후기가 있어요." },
-  { id: "jeil", name: "제일숯불막창 본점", gu: "수성구", dong: "동대구로29길", cat: "곱창·막창", ten: ["막창구이"], price: 2,
+  { id: "jeil", name: "제일숯불막창 본점", gu: "수성구", dong: "동대구로29길", cat: "곱창·막창", ten: ["막창구이"], price: 2, famous: true,
     desc: "숯불에 구워 먹는 막창집. 웨이팅이 생길 만큼 찾는 사람이 많습니다.",
     menu: ["숯불 막창"], tip: "기본 3인분부터 주문받는다는 후기가 있어요." },
-  { id: "hyomokgol", name: "효목골막창", gu: "동구", dong: "효목동", cat: "곱창·막창", ten: ["막창구이"], price: 2,
+  { id: "hyomokgol", name: "효목골막창", gu: "동구", dong: "효목동", cat: "곱창·막창", ten: ["막창구이"], price: 2, famous: true,
     desc: "효목동 골목의 오래된 막창 전문점.",
     menu: ["막창구이"], tip: "영업시간 정보가 적어요. 가기 전에 지도에서 확인하세요." },
-  { id: "gulliver", name: "걸리버막창", gu: "북구", dong: "본점 · 옥산로", cat: "곱창·막창", ten: ["막창구이"], price: 2,
+  { id: "gulliver", name: "걸리버막창", gu: "북구", dong: "본점 · 옥산로", cat: "곱창·막창", ten: ["막창구이"], price: 2, famous: true,
     desc: "대구 3대 막창으로 꼽히는 집. 평일에도 줄을 설 만큼 유명합니다. 연탄불에 쫀드기도 구워 줍니다.",
     menu: ["막창", "생삼겹", "생목살", "버섯된장찌개"], tip: "지점이 많아서 가까운 곳 아무 데나 가도 돼요. 버섯된장찌개도 꼭 같이." },
   { id: "iltong", name: "일통왕소금구이", gu: "수성구", dong: "달구벌대로", cat: "고기", ten: [], price: 2, badge: "야구선수들의 단골집",
@@ -171,7 +173,7 @@ const PLACES = [
   { id: "nakyoung", name: "낙영찜갈비 본점", gu: "중구", dong: "동인동", cat: "고기", ten: ["찜갈비"], price: 3, badge: "직접 먹어 보고 반한 곳",
     desc: "동인동 찜갈비 골목의 대표 가게. 본관과 별관에 넓은 전용 주차장이 있습니다.",
     menu: ["찜갈비"], tip: "16~17시는 준비 시간, 격주 월요일 휴무예요." },
-  { id: "wanggeomi", name: "왕거미식당", gu: "중구", dong: "국채보상로", cat: "고기", ten: ["뭉티기"], price: 3,
+  { id: "wanggeomi", name: "왕거미식당", gu: "중구", dong: "국채보상로", cat: "고기", ten: ["뭉티기"], price: 3, famous: true,
     desc: "생고기(뭉티기)로 이름난 노포. 오드래기, 대창구이, 등골 같은 특수부위도 냅니다.",
     menu: ["생고기", "오드래기", "대창구이", "등골"], tip: "생고기는 평일에만 팔아요. 일요일 휴무, 주차장 없음." },
   { id: "newyork", name: "뉴욕통닭", gu: "중구", dong: "종로", cat: "치킨", ten: [], price: 2, badge: "어릴 때부터 먹던 찜닭",
@@ -180,7 +182,7 @@ const PLACES = [
   { id: "goindol", name: "고인돌", gu: "동구", dong: "평화시장 닭똥집골목", cat: "치킨", ten: [], price: 1, badge: "서울 친구들도 맛있게 먹은 집",
     desc: "평화시장 닭똥집 골목에서 손꼽히는 집. 닭똥집 튀김과 뚝배기 찜닭이 대표 메뉴입니다.",
     menu: ["닭똥집 (후라이드·양념·간장)", "뚝배기 찜닭"], tip: "손님이 적으면 일찍 문을 닫기도 해요." },
-  { id: "donga", name: "동아식당", gu: "중구", dong: "국채보상로125길", cat: "한식·분식", ten: [], price: 1,
+  { id: "donga", name: "동아식당", gu: "중구", dong: "국채보상로125길", cat: "한식·분식", ten: [], price: 1, famous: true,
     desc: "메뉴 네 가지 정도로 단출하게 하는 국수집. 메뉴는 철마다 바뀝니다.",
     menu: ["고등어소면", "계란김밥", "들기름국수"], tip: "대기가 매우 길어요. 테이블링 원격 줄서기를 이용하세요." },
   { id: "silla", name: "신라식당", gu: "중구", dong: "동성로", cat: "한식·분식", ten: [], price: 2, badge: "대학생 때 단골집",
@@ -192,7 +194,10 @@ const PLACES = [
   { id: "dongheung", name: "동흥", gu: "동구", dong: "동대구역 앞", cat: "한식·분식", ten: [], price: 2, badge: "직접 먹어 보고 괜찮았던 곳", map: "동대구역 동흥",
     desc: "동대구역 앞 평양냉면·곰탕집. 기차 타기 전에 들러 한 끼 하기 좋습니다.",
     menu: ["평양냉면", "곰탕"], tip: "역 바로 앞이라 기차 시간 맞춰 가기 편해요." },
-  { id: "menyaroji", name: "멘야로지", gu: "동구", dong: "동대구역 · 동부로32길", cat: "라멘·텐동", ten: [], price: 2,
+  { id: "deokseong", name: "덕성반점", gu: "중구", dong: "대봉로", cat: "중식", ten: ["야끼우동"], price: 2, famous: true,
+    desc: "중화비빔밥과 야끼우동으로 이름난 중식당. 파인애플 대신 사과를 넣은 소스를 부어 내는 탕수육도 유명합니다.",
+    menu: ["중화비빔밥", "야끼우동", "탕수육"], tip: "월요일 휴무, 오후 3~5시는 쉬는 시간이에요." },
+  { id: "menyaroji", name: "멘야로지", gu: "동구", dong: "동대구역 · 동부로32길", cat: "라멘·텐동", ten: [], price: 2, famous: true,
     desc: "동대구역 근처 라멘집. 진한 닭 육수의 토리파이탄과 닭튀김 토리카츠가 인기입니다.",
     menu: ["토리파이탄", "토리카츠", "탄탄멘", "고기덮밥"], tip: "점심엔 15분 정도 기다린다는 후기가 있어요. 기차 타기 전에 들르기 좋아요." },
   { id: "gomiten", name: "고미텐", gu: "수성구", dong: "동원로", cat: "라멘·텐동", ten: [], price: 2, badge: "대구 친구 추천",
@@ -230,7 +235,7 @@ const PLACES = [
 // 가게가 많은 구·군부터
 const GUS = ["전체", ...Object.entries(PLACES.reduce((n, p) => ({ ...n, [p.gu]: (n[p.gu] || 0) + 1 }), {}))
   .sort((x, y) => y[1] - x[1]).map(([g]) => g)];
-const CATS = ["전체", "곱창·막창", "고기", "치킨", "한식·분식", "라멘·텐동", "피자·버거", "다이닝", "카페·브런치"];
+const CATS = ["전체", "곱창·막창", "고기", "치킨", "한식·분식", "중식", "라멘·텐동", "피자·버거", "다이닝", "카페·브런치"];
 const state = { q: "", gu: "전체", cat: "전체" };
 
 const $ = (s) => document.querySelector(s);
@@ -273,7 +278,7 @@ function render() {
   list.innerHTML = shown.map((p) => `
     <article class="place${p.badge ? " fav" : ""}" id="p-${p.id}">
       <div class="meta"><span class="cat">${p.cat}</span><span>${p.gu} · ${esc(p.dong)}</span></div>
-      ${p.badge ? `<span class="badge">${esc(p.badge)}</span>` : ""}
+      ${p.badge ? `<span class="badge">${esc(p.badge)}</span>` : p.famous ? `<span class="badge famous">대구 유명 맛집</span>` : ""}
       <h3>${esc(p.name)}${p.ten.map((t) => `<span class="ten">대구 10미 · ${t}</span>`).join("")}</h3>
       <p>${esc(p.desc)}</p>
       <ul class="menu">${p.menu.map((m) => `<li>${esc(m)}</li>`).join("")}</ul>
