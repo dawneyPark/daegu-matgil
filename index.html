@@ -115,8 +115,6 @@ h2 { font-family: var(--font-display); font-weight: 400; font-size: 26px; margin
 .links { display: flex; gap: 6px; }
 .links a { font-size: 12px; padding: 4px 9px; border: 1px solid var(--line); border-radius: 4px; text-decoration: none; white-space: nowrap; }
 .links a:hover { border-color: var(--ink); }
-.fav { background: none; border: 0; cursor: pointer; font-size: 13px; color: var(--muted); padding: 2px 0; font-family: inherit; }
-.fav[aria-pressed="true"] { color: var(--chili); font-weight: 700; }
 .empty { padding: 32px 0; color: var(--muted); border-top: 1px solid var(--line); }
 @media (max-width: 640px) {
   .place { grid-template-columns: minmax(0, 1fr); }
@@ -226,10 +224,6 @@ const GUS = ["전체", "중구", "남구", "동구", "서구", "북구", "수성
 const CATS = ["전체", "고기", "국밥·국수", "해산물", "분식", "시장", "카페"];
 const state = { q: "", gu: "전체", cat: "전체", ten: null, pick: null };
 
-let favs = new Set();
-try { favs = new Set(JSON.parse(localStorage.getItem("daegu-favs") || "[]")); } catch (e) {}
-function saveFavs() { try { localStorage.setItem("daegu-favs", JSON.stringify([...favs])); } catch (e) {} }
-
 const $ = (s) => document.querySelector(s);
 const esc = (s) => s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
@@ -273,8 +267,8 @@ function render() {
   document.querySelectorAll("#cat .chip").forEach((b) => b.setAttribute("aria-pressed", b.dataset.v === state.cat));
   document.querySelectorAll(".mi-item").forEach((b) => b.setAttribute("aria-pressed", b.dataset.v === state.ten));
 
-  const shown = PLACES.filter(matches).sort((a, b) => (favs.has(b.id) - favs.has(a.id)));
-  $("#count").textContent = `${shown.length}곳` + (favs.size ? ` · 찜 ${favs.size}` : "");
+  const shown = PLACES.filter(matches);
+  $("#count").textContent = `${shown.length}곳`;
   const list = $("#list");
   if (!shown.length) {
     const extra = state.ten ? ` <a href="https://map.naver.com/p/search/${encodeURIComponent("대구 " + state.ten)}" target="_blank" rel="noopener">네이버 지도에서 '대구 ${state.ten}' 찾아보기</a>` : "";
@@ -296,18 +290,10 @@ function render() {
           <a href="https://map.naver.com/p/search/${mapQuery(p)}" target="_blank" rel="noopener">네이버 지도</a>
           <a href="https://map.kakao.com/?q=${mapQuery(p)}" target="_blank" rel="noopener">카카오맵</a>
         </div>
-        <button class="fav" type="button" data-id="${p.id}" aria-pressed="${favs.has(p.id)}">${favs.has(p.id) ? "♥ 찜함" : "♡ 찜하기"}</button>
       </div>
     </article>`).join("");
 }
 
-$("#list").addEventListener("click", (e) => {
-  const b = e.target.closest(".fav");
-  if (!b) return;
-  const id = b.dataset.id;
-  favs.has(id) ? favs.delete(id) : favs.add(id);
-  saveFavs(); render();
-});
 $("#q").addEventListener("input", (e) => { state.q = e.target.value.trim(); state.pick = null; render(); });
 $("#reset").addEventListener("click", () => {
   Object.assign(state, { q: "", gu: "전체", cat: "전체", ten: null, pick: null });
