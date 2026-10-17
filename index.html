@@ -105,6 +105,7 @@ h2 { font-family: var(--font-display); font-weight: 400; font-size: 26px; margin
 .body h3 { margin: 0; font-size: 19px; line-height: 1.35; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 .tag { font-size: 11px; font-weight: 700; padding: 2px 7px; border-radius: 4px; background: var(--chili-soft); color: var(--chili); letter-spacing: .02em; }
 .tag.cat { background: transparent; border: 1px solid var(--line); color: var(--muted); font-weight: 500; }
+.tag.mine { background: transparent; border: 1px solid var(--leaf); color: var(--leaf); }
 .body p { margin: 0; max-width: 62ch; }
 .menu { display: flex; gap: 6px 14px; flex-wrap: wrap; font-size: 14px; color: var(--muted); padding: 0; margin: 0; list-style: none; }
 .menu li::before { content: "· "; color: var(--chili); }
@@ -217,11 +218,70 @@ const PLACES = [
     menu: ["카페", "분식", "시장 간식"], tip: "동성로에서 걸어서 갈 수 있어요." },
   { id: "apsan", name: "앞산 카페거리", gu: "남구", dong: "대명동", cat: "카페", ten: [], price: 2,
     desc: "앞산 자락 아래 카페와 브런치집, 디저트 가게가 모인 거리. 앞산 전망대 케이블카와 묶어 반나절 코스로 좋습니다.",
-    menu: ["브런치", "디저트", "핸드드립"], tip: "주말 오후엔 주차가 어려워요." }
+    menu: ["브런치", "디저트", "핸드드립"], tip: "주말 오후엔 주차가 어려워요." },
+
+  // 직접 가 보고 맛있었던 곳 (mine: true)
+  { id: "chungmuro", name: "충무로양곱창", gu: "수성구", dong: "두산동 · 들안로 92", cat: "고기", ten: [], price: 3, mine: true,
+    desc: "들안길에 있는 양곱창 전문점. 특양과 대창이 가장 인기 있고, 막창구이와 곱창전골도 있습니다.",
+    menu: ["특양구이", "대창구이", "막창구이", "곱창전골"], tip: "전화로 예약하고 가는 게 좋아요." },
+  { id: "jeil", name: "제일숯불막창 본점", gu: "수성구", dong: "동대구로29길", cat: "고기", ten: ["막창구이"], price: 2, mine: true,
+    desc: "숯불에 구워 먹는 막창집. 웨이팅이 생길 만큼 찾는 사람이 많습니다.",
+    menu: ["숯불 막창"], tip: "기본 3인분부터 주문받는다는 후기가 있어요." },
+  { id: "iltong", name: "일통왕소금구이", gu: "수성구", dong: "달구벌대로", cat: "고기", ten: [], price: 2, mine: true,
+    desc: "왕소금을 뿌려 굽는 돼지고기 구이집. 직원이 고기를 끝까지 구워 줍니다.",
+    menu: ["삼겹살", "목살", "된장찌개"], tip: "목살을 먹고 된장찌개에 밥을 비벼 먹어 보세요." },
+  { id: "zootopia", name: "주토피아", gu: "중구", dong: "동덕로", cat: "양식", ten: [], price: 2, mine: true,
+    desc: "나폴리식 화덕 피자집. 서울 신사동에 2호점을 낼 만큼 이름난 대구 본점입니다.",
+    menu: ["모르타델라 피스타치오 피자", "마르게리따", "카프리", "디아볼라"], tip: "예약 없이는 들어가기 어려워요." },
+  { id: "kais", name: "카이스샌드위치샵", gu: "중구", dong: "봉산동", cat: "카페", ten: [], price: 2, mine: true,
+    desc: "봉산문화거리의 샌드위치 가게. 매장이 넓고 2인석과 바 좌석이 많아 혼자 가기도 편합니다.",
+    menu: ["치킨팜 샌드위치", "커피"], tip: "아침 일찍 열어 브런치로 좋아요." },
+  { id: "deep", name: "딥커피로스터스", gu: "중구", dong: "봉산동", cat: "카페", ten: [], price: 1, mine: true,
+    desc: "봉산문화거리에 본점이 있는 로스터리 카페. 범어동 등 대구 안에 여러 지점이 있습니다.",
+    menu: ["커피"], tip: "지점마다 주소가 다르니 본점인지 확인하고 가세요." },
+  { id: "newyork", name: "뉴욕통닭", gu: "중구", dong: "종로", cat: "치킨", ten: [], price: 2, mine: true,
+    desc: "가마솥에 볶아 내는 양념치킨으로 알려진 통닭집. 튀김옷이 도톰해 닭강정 같은 식감입니다.",
+    menu: ["가마솥 양념치킨", "찜닭"], tip: "하루 판매량이 적어 금방 마감돼요. 전화 예약 후 포장 추천." },
+  { id: "roller", name: "롤러커피", gu: "중구", dong: "남산동", cat: "카페", ten: [], price: 1, mine: true,
+    desc: "남산동 인쇄골목 안 작은 카페. 이름은 인쇄할 때 잉크를 바르는 롤러에서 따왔습니다.",
+    menu: ["카페라떼"], tip: "점심시간엔 근처 직장인들로 줄이 생겨요." },
+  { id: "oily", name: "오일리버거 교동본점", gu: "중구", dong: "국채보상로125길", cat: "양식", ten: [], price: 2, mine: true,
+    desc: "동성로 근처 골목의 수제버거 가게.",
+    menu: ["수제버거"], tip: "동아식당과 같은 골목이라 같이 둘러보기 좋아요." },
+  { id: "donga", name: "동아식당", gu: "중구", dong: "국채보상로125길", cat: "국밥·국수", ten: [], price: 1, mine: true,
+    desc: "메뉴 네 가지 정도로 단출하게 하는 국수집. 메뉴는 철마다 바뀝니다.",
+    menu: ["고등어소면", "계란김밥", "들기름국수"], tip: "대기가 매우 길어요. 테이블링 원격 줄서기를 이용하세요." },
+  { id: "orangewood", name: "와인다이닝 오렌지우드", gu: "중구", dong: "동인동", cat: "양식", ten: [], price: 3, mine: true,
+    desc: "장작불로 요리하는 내추럴 와인 다이닝. 오픈 키친에 바 좌석과 테이블석이 있어 기념일 데이트로 좋습니다.",
+    menu: ["관자", "병어 스테이크", "내추럴 와인"], tip: "월요일 휴무. 영업시간이 바뀔 수 있어 인스타그램으로 확인하세요." },
+  { id: "nakyoung", name: "낙영찜갈비 본점", gu: "중구", dong: "동인동", cat: "고기", ten: ["찜갈비"], price: 3, mine: true,
+    desc: "동인동 찜갈비 골목의 대표 가게. 본관과 별관에 넓은 전용 주차장이 있습니다.",
+    menu: ["찜갈비"], tip: "16~17시는 준비 시간, 격주 월요일 휴무예요." },
+  { id: "hyomokgol", name: "효목골막창", gu: "동구", dong: "효목동", cat: "고기", ten: ["막창구이"], price: 2, mine: true,
+    desc: "효목동 골목의 오래된 막창 전문점.",
+    menu: ["막창구이"], tip: "동네 노포라 저녁에 붐벼요." },
+  { id: "meals", name: "오스테리아 밀즈", gu: "수성구", dong: "범어동", cat: "양식", ten: [], price: 2, mine: true,
+    desc: "수성구청역 근처 파스타집. 콜드 파스타와 한치 먹물 리조또가 대표 메뉴입니다.",
+    menu: ["콜드 파스타", "한치 먹물 리조또", "스테이크"], tip: "예약을 받지 않아요. 오픈 시간에 맞춰 가면 덜 기다려요." },
+  { id: "aso", name: "아소다이닝", gu: "수성구", dong: "달구벌대로496길", cat: "일식", ten: [], price: 3, mine: true,
+    desc: "수성구의 일식 다이닝. 가격대는 있지만 그만큼 맛있다는 평이 많습니다.",
+    menu: ["옥돔", "코스(예약)"], tip: "예약하면 금액에 맞춰 코스를 구성해 줘요." },
+  { id: "goindol", name: "고인돌", gu: "동구", dong: "평화시장 닭똥집골목", cat: "치킨", ten: [], price: 1, mine: true,
+    desc: "평화시장 닭똥집 골목에서 손꼽히는 집. 닭똥집 튀김과 뚝배기 찜닭이 대표 메뉴입니다.",
+    menu: ["닭똥집 (후라이드·양념·간장)", "뚝배기 찜닭"], tip: "손님이 적으면 일찍 문을 닫기도 해요." },
+  { id: "silla", name: "신라식당", gu: "중구", dong: "동성로", cat: "해산물", ten: [], price: 2, mine: true,
+    desc: "돌판에 볶아 주는 낙지볶음으로 유명한 동성로 식당. 매콤달콤한 양념에 낙지가 실합니다.",
+    menu: ["돌판 낙지볶음"], tip: "낙지볶음은 2인분부터 주문돼요. 웨이팅이 있는 편." },
+  { id: "wanggeomi", name: "왕거미식당", gu: "중구", dong: "국채보상로", cat: "고기", ten: ["뭉티기"], price: 3, mine: true,
+    desc: "생고기(뭉티기)로 이름난 노포. 오드래기, 대창구이, 등골 같은 특수부위도 냅니다.",
+    menu: ["생고기", "오드래기", "대창구이", "등골"], tip: "생고기는 평일에만 팔아요. 일요일 휴무, 주차장 없음." },
+  { id: "jungang-tteok", name: "중앙떡볶이", gu: "중구", dong: "동성로", cat: "분식", ten: ["납작만두"], price: 1, mine: true,
+    desc: "30년 넘은 동성로 분식집. 매콤한 가래떡 떡볶이에 납작만두를 곁들여 먹습니다.",
+    menu: ["가래떡 떡볶이", "납작만두", "순대"], tip: "번호표를 받고 기다릴 만큼 붐벼요. 일요일 휴무." }
 ];
 
 const GUS = ["전체", "중구", "남구", "동구", "서구", "북구", "수성구", "달서구", "달성군"];
-const CATS = ["전체", "고기", "국밥·국수", "해산물", "분식", "시장", "카페"];
+const CATS = ["전체", "고기", "국밥·국수", "해산물", "치킨", "양식", "일식", "분식", "시장", "카페"];
 const state = { q: "", gu: "전체", cat: "전체", ten: null, pick: null };
 
 const $ = (s) => document.querySelector(s);
@@ -279,7 +339,7 @@ function render() {
     <article class="place${state.pick === p.id ? " pick" : ""}" id="p-${p.id}">
       <div class="where"><b>${p.gu}</b><span>${esc(p.dong)}</span></div>
       <div class="body">
-        <h3>${esc(p.name)} <span class="tag cat">${p.cat}</span>${p.ten.map((t) => `<span class="tag">10미 · ${t}</span>`).join("")}</h3>
+        <h3>${esc(p.name)} <span class="tag cat">${p.cat}</span>${p.mine ? `<span class="tag mine">내 맛집</span>` : ""}${p.ten.map((t) => `<span class="tag">10미 · ${t}</span>`).join("")}</h3>
         <p>${esc(p.desc)}</p>
         <ul class="menu">${p.menu.map((m) => `<li>${esc(m)}</li>`).join("")}</ul>
         <div class="tip">팁. ${esc(p.tip)}</div>
