@@ -111,6 +111,13 @@ h1 { font-family: var(--font-serif); font-weight: 400; font-size: clamp(28px, 7.
 .links a:hover { border-color: var(--accent); color: var(--accent); }
 .empty { padding: 32px 0; text-align: center; color: var(--muted); }
 
+/* 탭 */
+.tabs { display: flex; gap: 4px; padding: 4px; background: var(--surface); border: 1px solid var(--line); border-radius: 999px; position: sticky; top: 8px; z-index: 5; box-shadow: var(--shadow); }
+.tab { flex: 1; font: inherit; font-family: var(--font-serif); font-size: 15px; padding: 9px 0; border: 0; border-radius: 999px; background: transparent; color: var(--muted); cursor: pointer; }
+.tab[aria-selected="true"] { background: var(--accent); color: var(--on-accent); }
+.panel { display: flex; flex-direction: column; gap: 36px; }
+.panel[hidden] { display: none; }
+
 /* 구경할 곳 */
 .shops-note { margin: 0; font-size: 13px; color: var(--muted); }
 .shop { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 16px 20px; display: flex; flex-direction: column; gap: 6px; }
@@ -133,6 +140,12 @@ footer p { margin: 0; }
     <p class="lede">귀한 걸음 해 주셔서 고맙습니다.<br>저희가 좋아하는 곳과<br>대구에서 맛있기로 이름난 가게들을<br>모아 두었어요.</p>
   </header>
 
+  <div class="tabs" role="tablist" aria-label="보기 선택">
+    <button class="tab" role="tab" id="tab-food" aria-controls="panel-food" aria-selected="true" type="button">맛집</button>
+    <button class="tab" role="tab" id="tab-shops" aria-controls="panel-shops" aria-selected="false" type="button">구경할 곳</button>
+  </div>
+
+  <div class="panel" id="panel-food" role="tabpanel" aria-labelledby="tab-food">
   <section class="controls" aria-label="찾기">
     <div class="search-row">
       <input id="q" type="search" placeholder="메뉴, 동네, 가게 이름" aria-label="검색">
@@ -148,7 +161,9 @@ footer p { margin: 0; }
     </div>
     <div class="list" id="list"></div>
   </section>
+  </div>
 
+  <div class="panel" id="panel-shops" role="tabpanel" aria-labelledby="tab-shops" hidden>
   <section aria-labelledby="shops-h" style="display:flex;flex-direction:column;gap:14px">
     <div class="list-head">
       <h2 id="shops-h">밥 먹고 구경할 곳</h2>
@@ -157,6 +172,7 @@ footer p { margin: 0; }
     <p class="shops-note">SNS로 알려진 옷가게·소품 가게예요.</p>
     <div class="list" id="shops"></div>
   </section>
+  </div>
 
   <footer>
     <p class="thanks">맛있는 시간 보내세요.</p>
@@ -294,7 +310,7 @@ const SHOPS = [
     desc: "미국 빈티지를 주로 들여오는 편집숍. 가격대가 있는 하이엔드 빈티지가 많습니다." },
   { id: "nightwaks", name: "나이트웍스", kind: "편집숍", where: "중구 · 동성로", map: "대구 나이트웍스",
     desc: "빈티지 리바이스 데님을 고쳐 만든 옷과 국내외 브랜드를 함께 파는 편집숍. 가격대가 적당한 편입니다." },
-  { id: "1507", name: "1507 베니핏 라운지", kind: "양말·카페", where: "중구 · 경상감영길", map: "대구 1507 베니핏 라운지",
+  { id: "1507", name: "1507 BENEFIT LOUNGE", kind: "양말·카페", where: "중구 · 중앙로역 3번 출구 앞", map: "1507 BENEFIT LOUNGE",
     desc: "몇 안 남은 한국 생산 양말 브랜드 1507의 매장. 양말을 고르며 커피도 마실 수 있습니다." },
   { id: "pickle", name: "피클샵", kind: "리빙·소품샵", where: "유천동 · 수성점", map: "대구 피클샵",
     desc: "그릇, 리빙 소품, 캐릭터 잡화를 파는 소품샵. 집들이 선물 고르기 좋습니다. 수성점 위층에는 카페가 있어요." }
@@ -352,6 +368,18 @@ chipRow($("#gu"), GUS, "gu");
 chipRow($("#cat"), CATS, "cat");
 render();
 renderShops();
+
+function showTab(name) {
+  const shops = name === "shops";
+  $("#tab-food").setAttribute("aria-selected", !shops);
+  $("#tab-shops").setAttribute("aria-selected", shops);
+  $("#panel-food").hidden = shops;
+  $("#panel-shops").hidden = !shops;
+}
+$("#tab-food").addEventListener("click", () => { showTab("food"); history.replaceState(null, "", location.pathname); });
+$("#tab-shops").addEventListener("click", () => { showTab("shops"); history.replaceState(null, "", "#shops"); });
+// 링크 끝에 #shops를 붙이면 구경할 곳 탭으로 바로 열림
+if (location.hash === "#shops") showTab("shops");
 </script>
 </body>
 </html>
