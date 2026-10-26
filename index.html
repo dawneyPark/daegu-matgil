@@ -111,6 +111,13 @@ h1 { font-family: var(--font-serif); font-weight: 400; font-size: clamp(28px, 7.
 .links a:hover { border-color: var(--accent); color: var(--accent); }
 .empty { padding: 32px 0; text-align: center; color: var(--muted); }
 
+/* 구경할 곳 */
+.shops-note { margin: 0; font-size: 13px; color: var(--muted); }
+.shop { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 16px 20px; display: flex; flex-direction: column; gap: 6px; }
+.shop h3 { font-family: var(--font-serif); font-weight: 700; font-size: 18px; line-height: 1.4; margin: 0; }
+.shop p { margin: 0; font-size: 14px; }
+.shop .foot { margin-top: 4px; }
+
 footer { text-align: center; font-size: 12px; color: var(--muted); display: flex; flex-direction: column; gap: 4px; }
 footer .thanks { font-family: var(--font-serif); font-size: 15px; color: var(--ink); margin-bottom: 8px; }
 footer p { margin: 0; }
@@ -140,6 +147,15 @@ footer p { margin: 0; }
       <span class="count" id="count"></span>
     </div>
     <div class="list" id="list"></div>
+  </section>
+
+  <section aria-labelledby="shops-h" style="display:flex;flex-direction:column;gap:14px">
+    <div class="list-head">
+      <h2 id="shops-h">밥 먹고 구경할 곳</h2>
+      <span class="count" id="shops-count"></span>
+    </div>
+    <p class="shops-note">동성로 근처에서 SNS로 알려진 옷가게·소품 가게예요.</p>
+    <div class="list" id="shops"></div>
   </section>
 
   <footer>
@@ -272,6 +288,33 @@ function matches(p) {
 
 function price(n) { return "₩₩₩".slice(0, n) + `<span class="off">${"₩₩₩".slice(n)}</span>`; }
 
+// 맛집과 따로 보여 주는 쇼핑 장소 (필터 없음)
+const SHOPS = [
+  { id: "lilisun", name: "리리선", kind: "빈티지 편집숍", where: "중구 · 동인동", map: "대구 리리선",
+    desc: "미국 빈티지를 주로 들여오는 편집숍. 가격대가 있는 하이엔드 빈티지가 많습니다." },
+  { id: "nightwaks", name: "나이트웍스", kind: "편집숍", where: "중구 · 동성로", map: "대구 나이트웍스",
+    desc: "빈티지 리바이스 데님을 고쳐 만든 옷과 국내외 브랜드를 함께 파는 편집숍. 가격대가 적당한 편입니다." },
+  { id: "1507", name: "1507 베니핏 라운지", kind: "양말·카페", where: "중구 · 경상감영길", map: "대구 1507 베니핏 라운지",
+    desc: "몇 안 남은 한국 생산 양말 브랜드 1507의 매장. 양말을 고르며 커피도 마실 수 있습니다." }
+];
+
+function renderShops() {
+  $("#shops-count").textContent = `${SHOPS.length}곳`;
+  $("#shops").innerHTML = SHOPS.map((p) => `
+    <article class="shop" id="s-${p.id}">
+      <div class="meta"><span class="cat">${p.kind}</span><span>${esc(p.where)}</span></div>
+      <h3>${esc(p.name)}</h3>
+      <p>${esc(p.desc)}</p>
+      <div class="foot">
+        <span></span>
+        <div class="links">
+          <a href="https://map.naver.com/p/search/${encodeURIComponent(p.map)}" target="_blank" rel="noopener">네이버 지도</a>
+          <a href="https://map.kakao.com/?q=${encodeURIComponent(p.map)}" target="_blank" rel="noopener">카카오맵</a>
+        </div>
+      </div>
+    </article>`).join("");
+}
+
 function render() {
   document.querySelectorAll("#gu .chip").forEach((b) => b.setAttribute("aria-pressed", b.dataset.v === state.gu));
   document.querySelectorAll("#cat .chip").forEach((b) => b.setAttribute("aria-pressed", b.dataset.v === state.cat));
@@ -306,6 +349,7 @@ $("#q").addEventListener("input", (e) => { state.q = e.target.value.trim(); rend
 chipRow($("#gu"), GUS, "gu");
 chipRow($("#cat"), CATS, "cat");
 render();
+renderShops();
 </script>
 </body>
 </html>
