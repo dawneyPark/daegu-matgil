@@ -166,11 +166,20 @@ footer p { margin: 0; }
   <div class="panel" id="panel-shops" role="tabpanel" aria-labelledby="tab-shops" hidden>
   <section aria-labelledby="shops-h" style="display:flex;flex-direction:column;gap:14px">
     <div class="list-head">
-      <h2 id="shops-h">밥 먹고 구경할 곳</h2>
+      <h2 id="shops-h">옷가게·소품 가게</h2>
       <span class="count" id="shops-count"></span>
     </div>
     <p class="shops-note">SNS로 알려진 옷가게·소품 가게예요.</p>
     <div class="list" id="shops"></div>
+  </section>
+
+  <section aria-labelledby="drive-h" style="display:flex;flex-direction:column;gap:14px">
+    <div class="list-head">
+      <h2 id="drive-h">차로 가면 좋은 곳</h2>
+      <span class="count" id="drive-count"></span>
+    </div>
+    <p class="shops-note">차를 가지고 오셨다면 예식 전후로 들러 보세요.</p>
+    <div class="list" id="drive"></div>
   </section>
   </div>
 
@@ -313,16 +322,31 @@ const SHOPS = [
   { id: "1507", name: "1507 BENEFIT LOUNGE", kind: "양말·카페", where: "중구 · 중앙로역 3번 출구 앞", map: "1507 BENEFIT LOUNGE",
     desc: "몇 안 남은 한국 생산 양말 브랜드 1507의 매장. 양말을 고르며 커피도 마실 수 있습니다." },
   { id: "pickle", name: "피클샵", kind: "리빙·소품샵", where: "수성구 · 수성점", map: "피클샵 수성점",
-    desc: "그릇, 리빙 소품, 캐릭터 잡화를 파는 소품샵. 집들이 선물 고르기 좋습니다. 수성점 위층에는 카페가 있어요." }
+    desc: "그릇, 리빙 소품, 캐릭터 잡화를 파는 소품샵. 집들이 선물 고르기 좋습니다. 수성점 위층에는 카페가 있어요." },
+  { id: "gansong", name: "대구간송미술관", group: "drive", kind: "미술관", where: "수성구 · 대구미술관 옆", map: "대구간송미술관",
+    desc: "간송 전형필이 모은 우리 문화유산을 대구에서 볼 수 있는 미술관. 2024년에 문을 열었습니다.",
+    tip: "월요일 휴관. 3월은 오전 10시~오후 6시예요. 인터파크 티켓으로 예약할 수 있고, 현장 방문도 돼요." },
+  { id: "sayuwon", name: "사유원", group: "drive", kind: "정원", where: "군위군", map: "사유원",
+    desc: "건축가들과 조경가가 함께 만든 산속 정원. 천천히 걸으며 쉬어 가기 좋고, 3월에는 매화 축제가 열리기도 합니다.",
+    tip: "공식 홈페이지에서 하루 전까지 예약해야 해요. 월요일 휴원. 입장료가 평일 5만 원, 주말 6만 9천 원 선이고, 둘러보는 데 3시간 이상 걸려요." }
 ];
 
 function renderShops() {
-  $("#shops-count").textContent = `${SHOPS.length}곳`;
-  $("#shops").innerHTML = SHOPS.map((p) => `
+  const near = SHOPS.filter((p) => p.group !== "drive");
+  const drive = SHOPS.filter((p) => p.group === "drive");
+  $("#shops-count").textContent = `${near.length}곳`;
+  $("#drive-count").textContent = `${drive.length}곳`;
+  $("#shops").innerHTML = near.map(shopCard).join("");
+  $("#drive").innerHTML = drive.map(shopCard).join("");
+}
+
+function shopCard(p) {
+  return `
     <article class="shop" id="s-${p.id}">
       <div class="meta"><span class="cat">${p.kind}</span><span>${esc(p.where)}</span></div>
       <h3>${esc(p.name)}</h3>
       <p>${esc(p.desc)}</p>
+      ${p.tip ? `<div class="tip"><b>Tip.</b>${esc(p.tip)}</div>` : ""}
       <div class="foot">
         <span></span>
         <div class="links">
@@ -330,7 +354,7 @@ function renderShops() {
           <a href="https://map.kakao.com/?q=${encodeURIComponent(p.map)}" target="_blank" rel="noopener">카카오맵</a>
         </div>
       </div>
-    </article>`).join("");
+    </article>`;
 }
 
 function render() {
